@@ -11,6 +11,13 @@ jobs:
   scheduled:
     runs-on: ubuntu-latest
     steps:
+      - name: Prompt for Input
+        id: input
+        run: |
+          echo "::set-output name=input::$(read -p 'Enter some input: ' value; echo $value)"
+      - name: Use Input
+        run: |
+          echo "The user entered: ${{ steps.input.outputs.input }}"
       - name: Setup deno
         uses: denoland/setup-deno@main
         with:
