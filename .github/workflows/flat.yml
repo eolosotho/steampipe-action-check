@@ -20,6 +20,6 @@ jobs:
       - name: Fetch data
         uses: githubocto/flat@v3
         with:
-          sql_connstring: postgresql://karan:eafd-4f17-8be7@karan-playground.usea1.db.steampipe.io:9193/tqxk4u
+          sql_connstring: postgres://karan:eafd-4f17-8be7@karan-playground.usea1.db.steampipe.io:9193/tqxk4u
           sql_queryfile: ./query.sql
           downloaded_filename: result.json
