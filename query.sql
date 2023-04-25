@@ -1,0 +1,1 @@
+select * from aws_iam_users;

@@ -1,0 +1,25 @@
+name: data
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+  push:
+    paths:
+      - .github/workflows/flat.yml
+      - ./query.sql
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: v1.10.x
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Fetch data
+        uses: githubocto/flat@v3
+        with:
+          sql_connstring: postgresql://karan:eafd-4f17-8be7@karan-playground.usea1.db.steampipe.io:9193/tqxk4u
+          sql_queryfile: ./query.sql
+          downloaded_filename: result.json
