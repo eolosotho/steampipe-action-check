@@ -72,7 +72,7 @@ runs:
         EVAL_EXIT_CODE=$?
 
         echo "$plugins" | tr ' ' '\n' | while read word; do
-            rm -f *"$word"*
+            rm -f $HOME/.steampipe/config/*"$word"*
         done
 
         if [ "$EVAL_EXIT_CODE" -eq 13 ] || [ "$EVAL_EXIT_CODE" -eq 255 ];then
