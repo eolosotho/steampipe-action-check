@@ -54,7 +54,9 @@ runs:
     - name: Parse connection_string
       shell: bash
       if: ${{ inputs.connection_string }}
-      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+      run: |
+        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+        cat $HOME/.steampipe/config/action.spc
 
     - name: Parse connection_file_path
       shell: bash
