@@ -79,4 +79,4 @@ runs:
           exit $EVAL_EXIT_CODE
         fi
         echo "Plugins installed successfully"
-        steampipe query "select * from terraform_local"
+        select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io';
