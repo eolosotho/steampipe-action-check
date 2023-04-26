@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: Install Steampipe
-      shell: bash
+      shell: sh
       run: |
         VER=${{ inputs.steampipe_version }}
         if [ "$VER" = "latest" ];then
@@ -29,8 +29,10 @@ runs:
         steampipe query "select 1"
     
     - name: Parse connection_string
-      shell: bash
-      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+      shell: sh
+      run: |
+        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+        cat $HOME/.steampipe/config/action.spc
 
     - name: Install plugins
       shell: sh
