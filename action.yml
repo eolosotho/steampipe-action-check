@@ -65,7 +65,7 @@ runs:
       shell: sh
       run: |
         steampipe plugin list
-        output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
+        output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
         eval $output
         echo "Plugins installed successfully"
         steampipe query "select * from terraform_local"
