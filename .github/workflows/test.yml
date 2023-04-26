@@ -17,3 +17,6 @@ jobs:
             connection \"net\" {
               plugin = \"net\"
             }
+      - name: Run query
+        shell: sh
+        run: steampipe query "select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io'"

@@ -17,7 +17,7 @@ runs:
   using: composite
   steps:
     - name: Install Steampipe
-      shell: sh
+      shell: bash
       run: |
         VER=${{ inputs.steampipe_version }}
         if [ "$VER" = "latest" ];then
@@ -29,11 +29,11 @@ runs:
         steampipe query "select 1"
     
     - name: Parse connection_string
-      shell: sh
+      shell: bash
       run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
 
     - name: Install plugins
-      shell: sh
+      shell: bash
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
@@ -50,4 +50,3 @@ runs:
           exit $EVAL_EXIT_CODE
         fi
         echo "Plugins installed successfully"
-        steampipe query "select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io'"
