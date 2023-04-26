@@ -62,7 +62,7 @@ runs:
       run: cp ${{ inputs.connection_file_path }}/* $HOME/config
 
     - name: Install plugins
-      shell: bash
+      shell: sh
       run: |
         steampipe plugin list
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
