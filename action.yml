@@ -63,9 +63,4 @@ runs:
 
     - name: Install plugins
       shell: bash
-      run: |
-        # output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
-        output=$(steampipe plugin list 2>&1 1>/dev/null)
-        eval $output
-        # echo "Plugins installed successfully"
-        # steampipe query "select * from terraform_local"
+      run: echo $(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
