@@ -54,9 +54,7 @@ runs:
     - name: Parse connection_string
       shell: bash
       if: ${{ inputs.connection_string }}
-      run: |
-        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
-        cat $HOME/.steampipe/config/action.spc
+      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
 
     - name: Parse connection_file_path
       shell: bash
@@ -65,4 +63,8 @@ runs:
 
     - name: Install plugins
       shell: bash
-      run: steampipe plugin list
+      run: |
+        output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
+        eval $output
+        echo "Plugins installed successfully"
+        steampipe query "select * from terraform_local"

@@ -16,5 +16,5 @@ jobs:
           connection_string: |
             connection \"terraform\" {
               plugin = \"terraform\"
-              paths = [ "/examples/**/*.tf" ]
+              paths = [ \"/examples/**/*.tf\" ]
             }
