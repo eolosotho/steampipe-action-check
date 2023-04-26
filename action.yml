@@ -50,4 +50,5 @@ runs:
           exit $EVAL_EXIT_CODE
         fi
         echo "Plugins installed successfully"
+        steampipe plugin list
         steampipe query "select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io'"
