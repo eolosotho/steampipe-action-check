@@ -51,21 +51,23 @@ runs:
         steampipe --version
         steampipe query "select 1"
     
-    - name: Parse connection_string
-      shell: bash
-      if: ${{ inputs.connection_string }}
-      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
-
-    - name: Parse connection_file_path
-      shell: bash
-      if: ${{ inputs.connection_file_path }}
-      run: cp ${{ inputs.connection_file_path }}/* $HOME/config
+    # - name: Parse connection_file_path
+    #   shell: bash
+    #   if: ${{ inputs.connection_file_path }}
+    #   run: cp ${{ inputs.connection_file_path }}/* $HOME/config
 
     - name: Install plugins
-      shell: sh
+      shell: bash
       run: |
         steampipe plugin list
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
         eval $output
         echo "Plugins installed successfully"
+
+    - name: Parse connection_string
+      shell: bash
+      if: ${{ inputs.connection_string }}
+      run: |
+        rm $HOME/.steampipe/config/*
+        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
         steampipe query "select * from terraform_local"
