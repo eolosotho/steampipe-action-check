@@ -30,9 +30,7 @@ runs:
     
     - name: Parse connection_string
       shell: sh
-      run: |
-        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
-        cat $HOME/.steampipe/config/action.spc
+      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
 
     - name: Install plugins
       shell: sh
@@ -52,5 +50,4 @@ runs:
           exit $EVAL_EXIT_CODE
         fi
         echo "Plugins installed successfully"
-        steampipe plugin list
         steampipe query "select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io'"
