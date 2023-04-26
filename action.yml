@@ -33,7 +33,7 @@ runs:
       run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
 
     - name: Install plugins
-      shell: bash
+      shell: sh
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
