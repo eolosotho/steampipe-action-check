@@ -39,7 +39,6 @@ runs:
           echo "Valid inputs"
         fi
 
-
     - name: Create temporary directories
       shell: bash
       id: make-temp-dir
@@ -50,17 +49,17 @@ runs:
         mkdir -p $tmp_install_dir
         echo "tmp-install-dir=$tmp_install_dir" >> $GITHUB_OUTPUT
 
-    # - name: Install Steampipe
-    #   shell: bash
-    #   run: |
-    #     VER=${{ inputs.steampipe_version }}
-    #     if [ "$VER" = "latest" ];then
-    #       VER=""
-    #     fi
-    #     # Install Steampipe
-    #     curl https://raw.githubusercontent.com/turbot/steampipe/main/install.sh | sudo bash -s $VER
-    #     steampipe --version
-    #     steampipe query "select 1" --install-dir ${{ steps.make-temp-dir.outputs.tmp-install-dir }}
+    - name: Install Steampipe
+      shell: bash
+      run: |
+        VER=${{ inputs.steampipe_version }}
+        if [ "$VER" = "latest" ];then
+          VER=""
+        fi
+        # Install Steampipe
+        curl https://raw.githubusercontent.com/turbot/steampipe/main/install.sh | sudo bash -s $VER
+        steampipe --version
+        steampipe query "select 1" --install-dir ${{ steps.make-temp-dir.outputs.tmp-install-dir }}
     
     # - name: Parse connection_string
     #   if: ${{ inputs.connection_string }}
