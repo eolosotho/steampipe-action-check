@@ -61,18 +61,18 @@ runs:
         steampipe --version
         steampipe query "select 1" --install-dir ${{ steps.make-temp-dir.outputs.tmp-install-dir }}
     
-    # - name: Parse connection_string
-    #   if: ${{ inputs.connection_string }}
-    #   run: printf '%s\n' ${{ inputs.connection_string }} > ${{ steps.make-temp-dir.outputs.tmp-install-dir }}/config/action.spc
+    - name: Parse connection_string
+      if: ${{ inputs.connection_string }}
+      run: printf '%s\n' ${{ inputs.connection_string }} > ${{ steps.make-temp-dir.outputs.tmp-install-dir }}/config/action.spc
 
-    # - name: Parse connection_file_path
-    #   if: ${{ inputs.connection_file_path }}
-    #   run: cp ${{ inputs.connection_file_path }}/* ${{ steps.make-temp-dir.outputs.tmp-install-dir }}/config
+    - name: Parse connection_file_path
+      if: ${{ inputs.connection_file_path }}
+      run: cp ${{ inputs.connection_file_path }}/* ${{ steps.make-temp-dir.outputs.tmp-install-dir }}/config
 
-    # - name: Install plugins
-    #   run: |
-    #     # Check for required plugins
-    #     output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
-    #     eval $output
-    #     echo "Plugins installed successfully"
-    #     steampipe query "select * from terraform_local"
+    - name: Install plugins
+      run: |
+        # Check for required plugins
+        output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
+        eval $output
+        echo "Plugins installed successfully"
+        steampipe query "select * from terraform_local"
