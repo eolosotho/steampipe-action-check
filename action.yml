@@ -63,4 +63,4 @@ runs:
 
     - name: Install plugins
       shell: bash
-      run: echo $(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed 's/[^[:alnum:][:space:]]//g')
+      run: steampipe plugin list 2>&1 1>/dev/null | echo
