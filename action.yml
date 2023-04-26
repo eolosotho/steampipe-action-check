@@ -51,23 +51,32 @@ runs:
         steampipe --version
         steampipe query "select 1"
     
+    - name: Parse connection_string
+      shell: bash
+      if: ${{ inputs.connection_string }}
+      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+
     # - name: Parse connection_file_path
     #   shell: bash
     #   if: ${{ inputs.connection_file_path }}
     #   run: cp ${{ inputs.connection_file_path }}/* $HOME/config
 
     - name: Install plugins
-      shell: bash
+      shell: sh
       run: |
-        steampipe plugin list
+        set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
-        eval $output
-        echo "Plugins installed successfully"
+        plugins=$(echo $output | sed -E "s/steampipe plugin install //")
 
-    - name: Parse connection_string
-      shell: bash
-      if: ${{ inputs.connection_string }}
-      run: |
-        rm $HOME/.steampipe/config/*
-        printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+        eval $output
+        EVAL_EXIT_CODE=$?
+
+        echo "$plugins" | tr ' ' '\n' | while read word; do
+            rm -f *"$word"*
+        done
+
+        if [ "$EVAL_EXIT_CODE" -eq 13 ] || [ "$EVAL_EXIT_CODE" -eq 255 ];then
+          exit $EVAL_EXIT_CODE
+        fi
+        echo "Plugins installed successfully"
         steampipe query "select * from terraform_local"
