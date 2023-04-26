@@ -9,36 +9,13 @@ branding:
 inputs:
   steampipe_version:
     description: "Steampipe version"
-  # steampipe_query:
-  #   description: "The query"
-  #   required: true
   connection_string:
     description: "The connection string"
-  connection_file_path:
-    description: "The connection file path"
-  github_token:
-    description: "The token is used for fetching patch of a pull request to show only new issues"
-    default: ${{ github.token }}
+    required: true
 
 runs:
   using: composite
   steps:
-    - name: Validate inputs
-      shell: bash
-      env:
-        INPUT_OPTION_A: ${{ inputs.connection_string }}
-        INPUT_OPTION_B: ${{ inputs.connection_file_path }}
-      run: |
-        if [ -z "$INPUT_OPTION_A" ] && [ -z "$INPUT_OPTION_B" ]; then
-          echo "Error: You must provide either option_a or option_b."
-          exit 1
-        elif [ -n "$INPUT_OPTION_A" ] && [ -n "$INPUT_OPTION_B" ]; then
-          echo "Error: You cannot provide both option_a and option_b."
-          exit 1
-        else
-          echo "Valid inputs"
-        fi
-
     - name: Install Steampipe
       shell: bash
       run: |
@@ -53,16 +30,10 @@ runs:
     
     - name: Parse connection_string
       shell: bash
-      if: ${{ inputs.connection_string }}
       run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
 
-    # - name: Parse connection_file_path
-    #   shell: bash
-    #   if: ${{ inputs.connection_file_path }}
-    #   run: cp ${{ inputs.connection_file_path }}/* $HOME/config
-
     - name: Install plugins
-      shell: sh
+      shell: bash
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
@@ -79,4 +50,4 @@ runs:
           exit $EVAL_EXIT_CODE
         fi
         echo "Plugins installed successfully"
-        select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io';
+        steampipe query "select issuer, not_after as exp_date from net_certificate where domain = 'steampipe.io'"
