@@ -33,7 +33,6 @@ runs:
       shell: bash
       run: |
         printf '%s\n' '${{ inputs.connections }}' > $HOME/.steampipe/config/connections.spc
-        cat $HOME/.steampipe/config/connections.spc
 
     - name: Install required plugins
       id: discover-plugins
@@ -42,15 +41,8 @@ runs:
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
         plugins=$(echo $output | sed -E "s/steampipe plugin install //")
-
         eval $output
-        EVAL_EXIT_CODE=$?
-
         echo "$plugins" | tr ' ' '\n' | while read word; do
             rm -f $HOME/.steampipe/config/*"$word"*
         done
-
-        if [ "$EVAL_EXIT_CODE" -eq 13 ] || [ "$EVAL_EXIT_CODE" -eq 255 ];then
-          exit $EVAL_EXIT_CODE
-        fi
         steampipe plugin list
