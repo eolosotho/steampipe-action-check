@@ -11,8 +11,7 @@ inputs:
     description: "Steampipe version"
   connections:
     description: "The connection string"
-  plugins:
-    description: "List of plugins to install"
+    required: true
 
 runs:
   using: composite
@@ -29,43 +28,16 @@ runs:
         steampipe --version
         steampipe query "select 1"
 
-    - name: Parse connections
+    - name: Setup connections
       id: setup-connection
-      if: ${{ inputs.connections }}
-      shell: bash
-      run: printf '%s\n' "${{ inputs.connections }}" > $HOME/.steampipe/config/connections.spc
-
-    - name: Install required plugins
-      id: install-plugins
-      if: ${{ inputs.plugins }}
       shell: bash
       run: |
-        Plugins=""
-        while read line; do
-          if [ -z "$Plugins" ];then
-            Plugins="$line"
-          else
-            Plugins="$Plugins $line"
-          fi
-        done <<EOF
-        ${{ inputs.plugins }}
-        EOF
-        
-        steampipe plugin install $Plugins
+        printf '%s\n' "${{ inputs.connections }}" > $HOME/.steampipe/config/connections.spc
+        cat $HOME/.steampipe/config/connections.spc
 
-        if [ ${{ inputs.connections }} ];then
-          echo "$Plugins" | tr ' ' '\n' | while read word; do
-              rm -f $HOME/.steampipe/config/*"$word"*
-          done
-        fi
-
-        steampipe plugin list
-        
-
-    - name: Discover required plugins
+    - name: Install required plugins
       id: discover-plugins
       shell: bash
-      if: ${{ !inputs.plugins && inputs.connections}} 
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
