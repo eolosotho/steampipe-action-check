@@ -30,6 +30,8 @@ runs:
         steampipe query "select 1"
 
     - name: Parse connection_string
+      id: setup-connection
+      if: ${{ inputs.connection_string }}
       shell: bash
       run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/connections.spc
 
@@ -51,9 +53,11 @@ runs:
         
         steampipe plugin install $Plugins
 
-        echo "$Plugins" | tr ' ' '\n' | while read word; do
-            rm -f $HOME/.steampipe/config/*"$word"*
-        done
+        if [ ${{ inputs.connection_string }} ];then
+          echo "$Plugins" | tr ' ' '\n' | while read word; do
+              rm -f $HOME/.steampipe/config/*"$word"*
+          done
+        fi
 
         steampipe plugin list
         
@@ -61,7 +65,7 @@ runs:
     - name: Discover required plugins
       id: discover-plugins
       shell: bash
-      if: ${{ !inputs.plugins }}
+      if: ${{ !inputs.plugins && inputs.connection_string}} 
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
