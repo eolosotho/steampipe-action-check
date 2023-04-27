@@ -60,7 +60,7 @@ runs:
     - name: Discover required plugins
       id: discover-plugins
       shell: bash
-      unless: ${{ inputs.plugins }}
+      if: ${{ !inputs.plugins }}
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
