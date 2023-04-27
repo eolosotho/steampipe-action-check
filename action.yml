@@ -11,7 +11,8 @@ inputs:
     description: "Steampipe version"
   connection_string:
     description: "The connection string"
-    required: true
+  plugins:
+    description: "List of plugins to install"
 
 runs:
   using: composite
@@ -27,13 +28,39 @@ runs:
         curl https://raw.githubusercontent.com/turbot/steampipe/main/install.sh | sudo bash -s $VER
         steampipe --version
         steampipe query "select 1"
-    
+
     - name: Parse connection_string
       shell: bash
-      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/action.spc
+      run: printf '%s\n' "${{ inputs.connection_string }}" > $HOME/.steampipe/config/connections.spc
 
-    - name: Install plugins
+    - name: Install required plugins
+      id: install-plugins
+      if: ${{ inputs.plugins }}
       shell: bash
+      run: |
+        Plugins=""
+        while read line; do
+          if [ -z "$Plugins" ];then
+            Plugins="$line"
+          else
+            Plugins="$Plugins $line"
+          fi
+        done <<EOF
+        ${{ inputs.plugins }}
+        EOF
+        
+        steampipe plugin install $Plugins
+        steampipe plugin list
+
+        echo "$Plugins" | tr ' ' '\n' | while read word; do
+            rm -f $HOME/.steampipe/config/*"$word"*
+        done
+        
+
+    - name: Discover required plugins
+      id: discover-plugins
+      shell: bash
+      unless: ${{ inputs.plugins }}
       run: |
         set +e
         output=$(steampipe plugin list 2>&1 1>/dev/null | grep -o 'steampipe plugin install [^$]*' | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g")
@@ -49,4 +76,4 @@ runs:
         if [ "$EVAL_EXIT_CODE" -eq 13 ] || [ "$EVAL_EXIT_CODE" -eq 255 ];then
           exit $EVAL_EXIT_CODE
         fi
-        echo "Plugins installed successfully"
+        steampipe plugin list
