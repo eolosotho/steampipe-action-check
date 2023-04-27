@@ -32,7 +32,7 @@ runs:
       id: setup-connection
       shell: bash
       run: |
-        printf '%s\n' "${{ inputs.connections }}" > $HOME/.steampipe/config/connections.spc
+        printf '%s\n' '${{ inputs.connections }}' > $HOME/.steampipe/config/connections.spc
         cat $HOME/.steampipe/config/connections.spc
 
     - name: Install required plugins
