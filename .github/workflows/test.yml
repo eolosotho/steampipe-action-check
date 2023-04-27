@@ -13,6 +13,10 @@ jobs:
         uses: ./ # Uses an action in the root directory
         id: setup-steampipe
         with:
+          connections: |
+            connection \"net\" {
+              plugin = \"net\"
+            }
           plugins: net
       - name: Run query
         shell: bash
