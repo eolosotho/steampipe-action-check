@@ -50,11 +50,12 @@ runs:
         EOF
         
         steampipe plugin install $Plugins
-        steampipe plugin list
 
         echo "$Plugins" | tr ' ' '\n' | while read word; do
             rm -f $HOME/.steampipe/config/*"$word"*
         done
+
+        steampipe plugin list
         
 
     - name: Discover required plugins
